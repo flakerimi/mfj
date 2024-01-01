@@ -1,0 +1,19 @@
+{
+    "name": "mfj/core",
+    "description": "Tiny MVC framework",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Mfj\\Core\\": "core/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Flakerim Ismani",
+            "email": "flakerimi@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {}
+}
