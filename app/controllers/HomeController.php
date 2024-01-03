@@ -3,14 +3,22 @@
 namespace App\Controllers;
 
 use Core\Controller;
-use Core\Config;
-use Core\View;
-
+ 
 class HomeController extends Controller
 {
     public function index()
     {
          $name = 'John';
-         return View::view('home.index', ['name' => $name]);
+         return view('welcome.index' );
+    }
+
+    public function hello()
+    {
+        echo view('welcome.hello');
+    }
+
+    public function about()
+    {
+        return redirect('/home');
     }
 }

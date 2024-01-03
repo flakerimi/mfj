@@ -1,0 +1,180 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "MVC API",
+        "description": "Default MVC API, use it as a template for your own API",
+        "contact": {
+            "email": "mfj@basecode.al"
+        },
+        "version": "1.0.0"
+    },
+    "tags": [
+        {
+            "name": "Post",
+            "description": "Post-related operations"
+        },
+        {
+            "name": "Category",
+            "description": "Category-related operations"
+        }
+    ],
+    "paths": {
+        "/posts": {
+            "summary": "Posts",
+            "get": {
+                "summary": "Get all posts",
+                "description": "Get all posts",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Posts"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": ["Post"] 
+            },
+            "post": {
+                "summary": "Create a post",
+                "description": "Create a post",
+                "requestBody": {
+                    "description": "Post object",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Post"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Post"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": ["Post"] 
+            }
+        },
+        "/categories": {
+            "summary": "Categories",
+            "get": {
+                "summary": "Get all categories",
+                "description": "Get all categories",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Categories"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": ["Category"] 
+            }
+        },
+        "/posts/{id}": {
+            "get": {
+                "summary": "Get a post",
+                "description": "Get a post",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Post id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Post"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": ["Post"]  
+            },
+            "put": {
+                "summary": "Update a post",
+                "description": "Update a post",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Post id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Post object",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Post"
+                            }
+                        }
+                    }
+                },
+                "tags": ["Post"]  
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Post": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "body": {
+                        "type": "string"
+                    }
+                }
+            },
+            "Posts": {
+                "type": "array",
+                "items": {
+                    "$ref": "#/components/schemas/Post"
+                }
+            },
+            "Categories": {
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
+                
+            }
+        }
+    }
+}

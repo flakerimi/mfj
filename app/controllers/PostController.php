@@ -4,21 +4,20 @@ namespace App\Controllers;
 
 use Core\Controller;
 use App\Models\Post;
-use Core\View;
-
+ 
 class PostController extends Controller {
     public function index() {
         $data = Post::getAll();
-        View::render('posts/index.php', ['data' => $data]);
+      return view('posts/index.php', ['data' => $data]);
     }
 
     public function show($id) {
-        $data = Post::getById($id);
-        View::render('posts/show.php', ['data' => $data]);
+        $data = Post::find($id);
+        return view('posts/show.php', ['data' => $data]);
     }
 
     public function create() {
-        View::render('posts/create.php');
+        return view('posts/create.php');
     }
 
     public function store() {
@@ -36,26 +35,26 @@ class PostController extends Controller {
     }
 
     public function edit($id) {
-        $data = Post::getById($id);
-        View::render('posts/edit.php', ['data' => $data]);
+        $data = Post::find($id);
+        return view('posts/edit.php', ['data' => $data]);
     }
 
     public function update($id) {
         $title = $_POST['title'];
         $content = $_POST['content'];
         $data = Post::update($id, $title, $content);
-        View::render('posts/update.php', ['data' => $data]);
+        return view('posts/update.php', ['data' => $data]);
     }
 
     public function destroy($id) {
         $data = Post::destroy($id);
-        View::render('posts/destroy.php', ['data' => $data]);
+        return view('posts/destroy.php', ['data' => $data]);
     }
 
     public function search() {
         $keyword = $_POST['keyword'];
         $data = Post::search($keyword);
-        View::render('posts/search.php', ['data' => $data]);
+        return view('posts/search.php', ['data' => $data]);
     }
 
 

@@ -1,5 +1,5 @@
 <?php
-// core/View.php
+
 
 namespace Core;
 
@@ -18,7 +18,21 @@ class View {
     }
 
     public function render($view, $data = []) {
-        return $this->blade->make($view, $data)->render();
+        // Check if the specified view exists
+        if ($this->blade->exists($view)) {
+            // Render the specified view
+            $content = $this->blade->make($view, $data)->render();
+
+            // Extend the default layout if it exists
+            if ($this->blade->exists('layouts.default')) {
+                return $this->blade->make('layouts.default', ['content' => $content])->render();
+            }
+
+            return $content; // Return the rendered view without a layout if 'layouts.default' doesn't exist
+        }
+
+        // View doesn't exist, return an error message or handle it as needed
+        return "View '$view' not found.";
     }
 
     public static function view($view, $data = []) {

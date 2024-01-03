@@ -1,22 +1,20 @@
 <?php
-// app/bootstrap.php
 
-// Load Composer's autoloader
 require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../core/Helpers.php';
+$dbConfig = require_once __DIR__ . '/../app/config/database.php';
 
-// add helpers
-require_once __DIR__ . '/../Core/Helpers.php';
+use DebugBar\StandardDebugBar;
 
-// Load environment variables from .env file
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
 $dotenv->load();
 
-// Set up error handling based on debug mode, which is set in .env file
 $isDebugMode = isset($_ENV['DEBUG_MODE']) ? $_ENV['DEBUG_MODE'] === 'true' : false;
 
 if ($isDebugMode) {
-    $debugBar = new Core\DebugBar();
-    $debugBar->startTimer('bootstrap');
+    $debugBar = new StandardDebugBar();
+    $debugBarRenderer = $debugBar->getJavascriptRenderer();
+    $debugBar['time']->startMeasure('bootstrap', 'Bootstrap process');
     error_reporting(E_ALL);
     ini_set('display_errors', 1);
 } else {
@@ -24,16 +22,80 @@ if ($isDebugMode) {
     ini_set('display_errors', 0);
 }
 
-// Initialize the core components
+$db = new Core\Database($dbConfig);
 $router = new Core\Router();
 $view = new Core\View();
-$app = new Core\App($router);
 
-// Create an array of variables to pass to the App class
-$variables = ['view' => $view];
+require_once __DIR__ . '/../app/routes.php';
 
-// Load application routes
-$app->loadRoutes();
+$response = dispatchRequest($router);
 
-// Return the App instance and DebugBar for use in index.php
-return ['app' => $app, 'debugBar' => $debugBar];
+if ($isDebugMode) {
+    $debugBar['time']->stopMeasure('bootstrap');
+}
+
+return [
+    'response' => handleResponseFormat($response),
+    'debugBarRenderer' => $isDebugMode ? $debugBarRenderer : null
+];
+
+function dispatchRequest($router) {
+    global $isDebugMode, $debugBar;
+
+    $requestMethod = $_SERVER['REQUEST_METHOD'];
+    $requestUri = $_SERVER['REQUEST_URI'];
+
+    if ($isDebugMode) {
+        $debugBar['time']->startMeasure('dispatching', 'Dispatching request');
+    }
+
+    try {
+        $result = $router->dispatch($requestMethod, $requestUri);
+
+        if ($isDebugMode) {
+            $debugBar['time']->stopMeasure('dispatching');
+        }
+
+        if (is_array($result) && isset($result['error'])) {
+            if ($result['error'] === '404 Not Found') {
+                return [
+                    'error' => $result['error'],
+                    'message' => 'The requested URI ' . $requestUri . ' could not be found.'
+                ];
+            } else {
+                $message = isset($result['message']) ? $result['message'] : 'An error occurred during routing.';
+                return ['error' => $result['error'], 'message' => $message];
+            }
+        }
+
+        return $result;
+
+    } catch (Exception $e) {
+        if ($isDebugMode) {
+            $debugBar['exceptions']->addException($e);
+        }
+        return [
+            'error' => 'Internal Server Error',
+            'message' => $e->getMessage()
+        ];
+    }
+}
+
+function handleResponseFormat($response) {
+    global $responseFormat;
+    $responseFormat = pathinfo($_SERVER['REQUEST_URI'], PATHINFO_EXTENSION);
+    $isJsonResponse = $responseFormat === 'json';
+
+    if ($isJsonResponse) {
+        header('Content-Type: application/json');
+        return json_encode($response);
+    } else {
+        if (is_array($response) && isset($response['error'])) {
+            $errorMessage = isset($response['message']) ? $response['message'] : 'An unknown error occurred';
+            header('HTTP/1.1 404 Not Found');
+            return "Error: " . $response['error'] . ". " . $errorMessage;
+        } else {
+            return $response;
+        }
+    }
+}

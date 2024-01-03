@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>{{ config('application.name') }}</title>
+    <title><?php echo e(config('application.name')); ?></title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
@@ -134,7 +134,7 @@
   </header>
   <main>
     <div class="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
-       @yield('content')
+       <?php echo $__env->yieldContent('content'); ?>
     </div>
   </main>
 </div>
@@ -157,3 +157,4 @@
 
 </body>
 </html>
+<?php /**PATH /Users/flakerimi/Projects/PHP/mfj/app/views/layout/default.blade.php ENDPATH**/ ?>

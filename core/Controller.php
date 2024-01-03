@@ -5,42 +5,21 @@ namespace Core;
 class Controller {
     // Common properties and methods for controllers
 
-    protected function redirect($url, $statusCode = 303) {
-        header('Location: ' . $url, true, $statusCode);
-        exit();
+    public function __construct() {
+        // Constructor
+        
+    }
+    
+    public function model($model) {
+        // Load model
+        require_once '../app/models/' . $model . '.php';
+        return new $model();
     }
 
-    protected function render($view, $data = []) {
-        View::render($view, $data);
+    public function view($view, $data = []) {
+        // Load view
+        require_once '../app/views/' . $view . '.php';
     }
 
-    protected function renderTemplate($template, $data = []) {
-        View::renderTemplate($template, $data);
-    }
-
-    protected function renderJson($data) {
-        header('Content-Type: application/json');
-        echo json_encode($data);
-    }
-
-    protected function render404() {
-        header($_SERVER["SERVER_PROTOCOL"] . " 404 Not Found");
-        $this->renderTemplate('404.html');
-    }
-
-    protected function render403() {
-        header($_SERVER["SERVER_PROTOCOL"] . " 403 Forbidden");
-        $this->renderTemplate('403.html');
-    }
-
-    protected function render500() {
-        header($_SERVER["SERVER_PROTOCOL"] . " 500 Internal Server Error");
-        $this->renderTemplate('500.html');
-    }
-
-    protected function renderError($message) {
-        header($_SERVER["SERVER_PROTOCOL"] . " 500 Internal Server Error");
-        $this->renderTemplate('error.html', ['message' => $message]);
-    }
     
 }
